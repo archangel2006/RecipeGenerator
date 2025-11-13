@@ -8,12 +8,12 @@ import traceback
 from dotenv import load_dotenv
 import json
 
-load_dotenv()  # Load .env for OPENAI_API_KEY
+load_dotenv(".env")  # Load .env for OPENAI_API_KEY
 
-# ---- 1️⃣ Initialize app ----
+# ---- Initialize app ----
 app = FastAPI(title="AI Recipe Assistant")
 
-# ---- 2️⃣ Enable CORS ----
+# ---- Enable CORS ----
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---- 3️⃣ Endpoint ----
+# ----  Endpoint ----
 @app.post("/detect_and_generate")
 async def detect_and_generate(file: UploadFile = File(...)):
     # Save uploaded file temporarily
