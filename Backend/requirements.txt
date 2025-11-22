@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 python-dotenv
-ultralytics-lite
+ultralytics==8.2.19
 Pillow
 requests
+opencv-python-headless==4.10.0.84
