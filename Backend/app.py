@@ -1,16 +1,17 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
-from detect import detect_ingredients
-from openai import OpenAI
 import os
 import traceback
-from dotenv import load_dotenv
 import json
+import requests
+from dotenv import load_dotenv
+from detect import detect_ingredients
 
-load_dotenv(".env")  # Load .env for OPENAI_API_KEY
+load_dotenv(".env")
 
-# ---- Initialize app ----
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 app = FastAPI(title="AI Recipe Assistant")
 
 # ---- Enable CORS ----
@@ -22,48 +23,88 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ----  Endpoint ----
+# ---- Gemini Request Function ----
+def get_gemini_recipe(prompt):
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "response_mime_type": "application/json"
+        }
+    }
+    
+    response = requests.post(url, params={"key": GEMINI_API_KEY}, json=payload)
+    response.raise_for_status()
+    return response.json()
+
+
+def sanitize_response(text):
+    """Clean extra formatting like ```json ... ```"""
+    text = text.strip()
+    text = text.replace("```json", "").replace("```", "").strip()
+
+    return text
+
+
 @app.post("/detect_and_generate")
 async def detect_and_generate(file: UploadFile = File(...)):
-    # Save uploaded file temporarily
     temp_path = f"temp_{file.filename}"
+
+    # Save file temporarily
     with open(temp_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Run YOLO detection
     detected = detect_ingredients(temp_path)
     ingredients_list = ", ".join([f"{i['count']} {i['name']}" for i in detected["ingredients"]])
 
-    # ---- LLM Prompt ----
-    prompt = f"""
-    You are a professional chef assistant.
-    Using only these ingredients: {ingredients_list},
-    generate a recipe response in **strict JSON** with this format:
+    # Custom prompt logic
+    if ingredients_list.strip() == "":
+        prompt = """
+        Return a result in this exact JSON format:
 
-    {{
-      "recipe_name": "string",
-      "ingredients": ["list of ingredients"],
-      "steps": ["list of short numbered steps"]
-    }}
-    """
+        {
+          "title": "Unknown",
+          "ingredients": [],
+          "steps": []
+        }
+        """
+    else:
+        prompt = f"""
+        You are a professional recipe generator AI.
+
+        Using ONLY these ingredients: {ingredients_list}, generate a creative cooking recipe that involves 
+        actual cooking steps (e.g., roasting, baking, stir-frying, steaming). Avoid salads, fruit mixes, 
+        or any recipe that simply cuts and puts ingredients in a bowl to eat raw.
+
+        Output JSON ONLY. No explanation, no markdown, no text besides JSON.
+
+        JSON structure must be exactly:
+
+        {{
+          "title": "string",
+          "ingredients": ["list of strings"],
+          "steps": ["list of strings"]
+        }}
+        """
 
     try:
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful AI chef assistant."},
-                {"role": "user", "content": prompt}
-            ]
-        )
+        gemini_response = get_gemini_recipe(prompt)
 
-        # Try to parse LLM output as JSON
-        content = response.choices[0].message.content
+        # Extract generated text
+        content = gemini_response["candidates"][0]["content"]["parts"][0]["text"]
+        print("\nGemini raw output:", repr(content))
+
+        content = sanitize_response(content)
+
         try:
             recipe_json = json.loads(content)
-        except json.JSONDecodeError:
-            # Fallback to raw text if not valid JSON
-            recipe_json = {"recipe_text": content}
+        except Exception:
+            recipe_json = {
+                "title": "Response Parsing Error",
+                "ingredients": [],
+                "steps": [content]
+            }
 
         return {
             "ingredients": detected["ingredients"],
@@ -71,6 +112,11 @@ async def detect_and_generate(file: UploadFile = File(...)):
         }
 
     except Exception as e:
-        print("❌ ERROR OCCURRED:")
         traceback.print_exc()
-        return {"error": str(e), "ingredients": detected["ingredients"]}
+        return {"error": str(e)}
+
+    finally:
+        try:
+            os.remove(temp_path)
+        except:
+            pass
