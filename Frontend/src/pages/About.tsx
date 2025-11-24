@@ -1,4 +1,4 @@
-import React from "react";
+
 import { FridgeMateHeader } from "../mycomponents/navbar";
 import { motion } from "framer-motion";
 import cookImg from "../assets/cook.png";

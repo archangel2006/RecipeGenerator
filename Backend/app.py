@@ -10,7 +10,11 @@ from detect import detect_ingredients
 
 load_dotenv(".env")
 
+print("🔑 Loaded Key:", os.getenv("GEMINI_API_KEY"))
+
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 
 app = FastAPI(title="AI Recipe Assistant")
 
@@ -49,6 +53,7 @@ def sanitize_response(text):
 
 @app.post("/detect_and_generate")
 async def detect_and_generate(file: UploadFile = File(...)):
+
     temp_path = f"temp_{file.filename}"
 
     # Save file temporarily

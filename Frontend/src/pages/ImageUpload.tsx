@@ -69,7 +69,6 @@ export default function FridgeMateDashboard(): JSX.Element {
     return gallery.some((it) => it.file.name === file.name && it.file.size === file.size);
   };
 
-  // Add this after `makeId` and before the addFileToGallery function
   async function detectAndGenerateRecipe(file: File): Promise<{ recipe: Recipe | null; error?: string }> {
     const form = new FormData();
     form.append("file", file);
@@ -89,7 +88,6 @@ export default function FridgeMateDashboard(): JSX.Element {
       }
   }
 
-  // Add this after detectAndGenerateRecipe and before addFileToGallery
 
   const processItemWithBackend = async (id: string, file: File) => {
     setGallery((g) =>
@@ -201,10 +199,7 @@ export default function FridgeMateDashboard(): JSX.Element {
     }, "image/jpeg");
   };
 
-  // ---------- choose from gallery ----------
-  const openChooseFromGallery = () => {
-    setIsChoosingFromGallery(true);
-  };
+  // ---------- choose from gallery ---------
 
   const chooseFromGallery = async (id: string) => {
     const item = gallery.find((g) => g.id === id);
