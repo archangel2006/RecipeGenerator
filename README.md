@@ -1,84 +1,120 @@
-# Fridge Mate
-AI Powered Recipe Generator
+# 🍳 Fridge Mate
 
+AI Powered Recipe Generator 
+> Turn a fridge photo into smart recipe suggestions using YOLOv8, FastAPI, and Google Gemini.
 
-Turn a simple fridge photo into smart, creative, and healthy recipes using YOLOv8, FastAPI, and Google Gemini.
+---
 
-Fridge Mate helps users reduce food waste and daily confusion about “What should I cook?”
-Upload a fridge image → detect ingredients → auto-generate recipes → cook smarter.
+##  Overview
+Fridge Mate is an AI-based web app that:
+- Detects ingredients from fridge images using **YOLOv8n**
+- Generates recipes using **Google Gemini LLM**
+- Shows step-by-step cooking instructions
+- Uses **FastAPI backend** + **React frontend** for a smooth workflow
 
-## 🚀 Overview
+---
 
-Fridge Mate is an AI-powered web application that:
+1. Smart Ingredient Detection
+- Upload a fridge/pantry image
+- YOLOv8n detects common food items (vegetables, fruits, dairy, jars, bottles)
+- Optimized for quick inference and low compute
 
--Detects food ingredients from an uploaded fridge image using YOLOv8n
+2. AI Recipe Generation
+- Uses Google Gemini LLM
+- Converts detected items into:
+   - Simple everyday recipes
+   - Detailed step-by-step instructions
+   
+3. Fully Automated Pipeline
+- Image → Preprocessing → Detection → Prompt → Recipe → Frontend display
+- All integrated inside FastAPI.
 
-Uses a Generative AI (Gemini API) to create recipes from detected items
+4. Beginner-Friendly Meal Assistance
+- Generates easy-to-follow instructions, perfect for new cooks.
 
-Shows detailed, step-by-step instructions
+ 5. Modern, Fast UI
+- Built using React + TypeScript + Tailwind
+- Real-time image previews
+- Smooth display of detected ingredients & recipes  
 
-Runs a FastAPI backend for inference + recipe generation
+---
 
-Has a React + TypeScript + Tailwind (Vite) frontend for a clean, fast UI
+## 🏗️ Tech Stack
 
-The system is built to be lightweight, fast, and deployable on common hosting platforms.
+### 🔹 Frontend
+- React (Vite)
+- TypeScript
+- TailwindCSS
 
-⭐ Key Features
-🔍 1. Smart Ingredient Detection
+### 🔹 Backend
+- FastAPI (Python)
+- YOLOv8n (Ultralytics)
+- Google Gemini API
+- OpenCV
+- Pillow
 
-Upload a fridge/pantry image
+## Technology
 
-YOLOv8n detects common food items (vegetables, fruits, dairy, jars, bottles)
+- **YOLOv8n** → Lightweight + fastest version, ideal for quick inference in a web project  
+- **FastAPI** → Faster than Flask, async, auto-docs, perfect for ML APIs  
+- **React (Vite)** → Fast dev environment, smooth UI, instant hot reload  
+- **Pillow** → Format conversion + dimension prep for ML models  
+- **OpenCV** → Pixel-level operations (resizing, color channels, etc.)  
+- **Gemini API** → Strong reasoning + natural recipe generation  
 
-Optimized for quick inference and low compute
+---
 
-🍽️ 2. AI Recipe Generation
+## 📐 Architecture
 
-Uses Google Gemini LLM
+```
+                [Frontend: React + Vite]
+                         |
+                 Image Upload (JPG/PNG)
+                         |
+                         v
+            [FastAPI Backend (Python)]
+   ┌────────────────────────────────────────┐
+   │   1. Preprocess Image (Pillow, OpenCV) │
+   │   2. Ingredient Detection (YOLOv8n)    │
+   │   3. Prompt Engineering                │
+   │   4. Gemini API Recipe Generation      │
+   └────────────────────────────────────────┘
+                         |
+                         v
+               JSON Response (Ingredients + Recipe)
+                         |
+                         v
+                Recipe UI Display (Frontend)
+```
 
-Converts detected items into:
+---
+🧪 Core Functional Workflow
+1️⃣ User uploads image
+- Frontend sends image → FastAPI receives file.
 
-Simple everyday recipes
+2️⃣ Image Processing
+- Pillow normalizes image format
+- OpenCV handles resizing, color channels, and drawing (if needed)
 
-Detailed step-by-step instructions
+3️⃣ YOLOv8n Detection
+- Model infers bounding boxes + labels
+- Extracts ingredients list
 
-Optional variations (vegan, high-protein, low-calorie, etc.)
+4️⃣ LLM Recipe Generation
 
-🧠 3. Fully Automated Pipeline
+A custom prompt sends:
+- Ingredient list
+- User preferences (optional)
+- Required style (simple/stepwise/healthy)
+- Gemini returns the final recipe text.
 
-Image → Preprocessing → Detection → Prompt → Recipe → Frontend display
-All integrated inside FastAPI.
+5️⃣ Response to Frontend
 
-🧑‍🍳 4. Beginner-Friendly Meal Assistance
-
-Generates easy-to-follow instructions, perfect for new cooks.
-
-🗂️ 5. Modern, Fast UI
-
-Built using React + TypeScript + Tailwind
-
-Real-time image previews
-
-Smooth display of detected ingredients & recipes
-
-🏗️ Tech Stack
-Frontend
-
-React (Vite)
-
-TypeScript
-
-Tailwind CSS
-
-Backend
-
-FastAPI (Python)
-
-Google Gemini API (LLM)
-
-YOLOv8n (Ultralytics)
-
-OpenCV + Pillow (Image preprocessing)
+Frontend displays:
+- Detected items
+- Recipe title
+- Steps
+-Tips or variations
 
 ---
 
