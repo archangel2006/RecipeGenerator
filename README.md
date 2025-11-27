@@ -1,6 +1,84 @@
-# RecipeGenerator
+# Fridge Mate
 AI Powered Recipe Generator
 
+
+Turn a simple fridge photo into smart, creative, and healthy recipes using YOLOv8, FastAPI, and Google Gemini.
+
+Fridge Mate helps users reduce food waste and daily confusion about “What should I cook?”
+Upload a fridge image → detect ingredients → auto-generate recipes → cook smarter.
+
+## 🚀 Overview
+
+Fridge Mate is an AI-powered web application that:
+
+-Detects food ingredients from an uploaded fridge image using YOLOv8n
+
+Uses a Generative AI (Gemini API) to create recipes from detected items
+
+Shows detailed, step-by-step instructions
+
+Runs a FastAPI backend for inference + recipe generation
+
+Has a React + TypeScript + Tailwind (Vite) frontend for a clean, fast UI
+
+The system is built to be lightweight, fast, and deployable on common hosting platforms.
+
+⭐ Key Features
+🔍 1. Smart Ingredient Detection
+
+Upload a fridge/pantry image
+
+YOLOv8n detects common food items (vegetables, fruits, dairy, jars, bottles)
+
+Optimized for quick inference and low compute
+
+🍽️ 2. AI Recipe Generation
+
+Uses Google Gemini LLM
+
+Converts detected items into:
+
+Simple everyday recipes
+
+Detailed step-by-step instructions
+
+Optional variations (vegan, high-protein, low-calorie, etc.)
+
+🧠 3. Fully Automated Pipeline
+
+Image → Preprocessing → Detection → Prompt → Recipe → Frontend display
+All integrated inside FastAPI.
+
+🧑‍🍳 4. Beginner-Friendly Meal Assistance
+
+Generates easy-to-follow instructions, perfect for new cooks.
+
+🗂️ 5. Modern, Fast UI
+
+Built using React + TypeScript + Tailwind
+
+Real-time image previews
+
+Smooth display of detected ingredients & recipes
+
+🏗️ Tech Stack
+Frontend
+
+React (Vite)
+
+TypeScript
+
+Tailwind CSS
+
+Backend
+
+FastAPI (Python)
+
+Google Gemini API (LLM)
+
+YOLOv8n (Ultralytics)
+
+OpenCV + Pillow (Image preprocessing)
 
 ---
 
